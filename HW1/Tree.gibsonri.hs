@@ -1,5 +1,6 @@
 module Tree where
 
+import Prelude
 
 --
 -- * Part 2: Binary trees
@@ -13,14 +14,27 @@ data Tree = Node Int Tree Tree   -- ^ Internal nodes
 
 -- | An example binary tree, which will be used in tests.
 t1 :: Tree
-t1 = Node 1 (Node 2 (Node 3 (Leaf 4) (Leaf 5))
-                    (Leaf 6))
-            (Node 7 (Leaf 8) (Leaf 9))
+t1 = Node 1
+      (Node 2
+        (Node 3
+          (Leaf 4)
+          (Leaf 5))
+        (Leaf 6))
+      (Node 7
+        (Leaf 8)
+        (Leaf 9))
 
 -- | Another example binary tree, used in tests.
 t2 :: Tree
-t2 = Node 6 (Node 2 (Leaf 1) (Node 4 (Leaf 3) (Leaf 5)))
-            (Node 8 (Leaf 7) (Leaf 9))
+t2 = Node 6
+      (Node 2
+        (Leaf 1)
+        (Node 4
+          (Leaf 3)
+          (Leaf 5)))
+      (Node 8
+        (Leaf 7)
+        (Leaf 9))
 
 
 -- | The integer at the left-most node of a binary tree.
@@ -163,12 +177,6 @@ inorder :: Tree -> [Int]
 inorder (Leaf m) = [m]
 inorder (Node m l r) = inorder l ++ [m] ++ inorder r
 
-t3 :: Tree
-t3 = Node 5
-  (Node 3
-    (Leaf 2) (Leaf 6))
-  (Node 7
-    (Leaf 4) (Leaf 8))
 -- | Check whether a binary tree is a binary search tree.
 --
 --   >>> isBST (Leaf 3)
@@ -186,25 +194,40 @@ t3 = Node 5
 --   >>> isBST t3
 --   False
 
--- This doesn't handle the case like the following
+-- It's necessary to handle a case like the following
 --       5
 --     /   \
 --    3     7
 --   / \   / \
 --  2   6 4   8
--- because *every* value in the left subtree must be less than the current value.
+-- The range of acceptable values for a node needs to be passed to each subtree.
+t3 :: Tree
+t3 = Node 5
+      (Node 3
+        (Leaf 2) (Leaf 6))
+      (Node 7
+        (Leaf 4) (Leaf 8))
 
 isBST :: Tree -> Bool
-isBST (Leaf _) = True
-isBST (Node m l r) =
+isBST t = isBSTAcc t Nothing Nothing
+
+nodeValue :: Tree -> Int
+nodeValue (Leaf value) = value
+nodeValue (Node value _ _) = value
+
+isBSTAcc :: Tree -> Maybe Int -> Maybe Int -> Bool
+isBSTAcc (Leaf _) _ _ = True
+isBSTAcc (Node value left right) minim maxim =
   let
-    isLeftBST = case l of
-      (Leaf lm) -> lm < m
-      (Node lm ll lr) -> lm < m && isBST ll && isBST lr
-    isRightBST = case r of
-      (Leaf rm) -> rm > m
-      (Node rm rl rr) -> rm > m && isBST rl && isBST rr
-  in isLeftBST && isRightBST
+    leftValue = nodeValue left
+    rightValue = nodeValue right
+    inRange n = maybe True (< n) minim && maybe True (> n) maxim
+  in leftValue < value && inRange leftValue &&
+    rightValue > value && inRange rightValue &&
+    isBSTAcc left minim (Just value) &&
+    isBSTAcc right (Just value) maxim
+-- For the left subtree, the center value is the new maximum.
+-- For the right subtree, the center value is the new minimum.
 
 -- | Check whether a number is contained in a binary search tree.
 --   (You may assume that the given tree is a binary search tree.)
