@@ -180,6 +180,7 @@ sum = foldr add Zero
 odds :: [Nat]
 odds = gen nextOdd one
 
+-- An infinitely long "list" of successive function applications on an initial value.
 gen :: (a -> a) -> a -> [a]
 gen f s = s : gen f (f s)
 

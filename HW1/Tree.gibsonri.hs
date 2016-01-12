@@ -75,6 +75,7 @@ rightmost (Leaf i) = i
 rightmost (Node _ _ r) = rightmost r
 
 -- Accumulates a function over a tree.
+-- Produces invalid results for things besides search.
 treeAcc :: (Int -> Int -> Int) -> Int -> Tree -> Int
 treeAcc f n (Leaf m) = f n m
 treeAcc f n (Node m l r) = f (applier res l) (applier res r)
