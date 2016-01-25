@@ -1,7 +1,7 @@
 -- Names:
 --  Rikki Gibson -- ONID: gibsonri
 --  Benjamin Narin -- ONID: narinb
---module MiniLogo where
+module MiniLogo where
 
 import Prelude hiding(Num)
 import Data.List
@@ -102,4 +102,19 @@ prettyExpr (Var v) = v
 prettyExpr (Num n) = show n
 prettyExpr (Add e1 e2) = prettyExpr e1 ++ "+" ++ prettyExpr e2
 
-main = putStrLn (pretty [nix])
+---------- Task 7 -----------
+optE :: Expr -> Expr
+optE (Add (Num n1) (Num n2)) = Num (n1 + n2)
+optE e = e
+
+---------- Task 8 -----------
+-- |
+--   >>> optP [Move (Add (Num 3) (Num 4)) (Num 5), Pen Up, Move (Var "x") (Num 4)]
+--   [Move (Num 7) (Num 5),Pen Up,Move (Var "x") (Num 4)]
+optP :: Prog -> Prog
+optP = map optC
+
+optC :: Cmd -> Cmd
+optC (Move e1 e2) = Move (optE e1) (optE e2)
+optC (Call m exprs) = Call m (map optE exprs)
+optC cmd = cmd
