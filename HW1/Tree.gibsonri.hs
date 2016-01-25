@@ -1,3 +1,6 @@
+-- Name: Richard (Rikki) Gibson
+-- ONID ID: gibsonri
+
 module Tree where
 
 import Prelude

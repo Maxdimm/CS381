@@ -1,3 +1,6 @@
+-- Name: Richard (Rikki) Gibson
+-- ONID ID: gibsonri
+
 module Nat where
 
 import Prelude hiding (Enum(..), sum)
