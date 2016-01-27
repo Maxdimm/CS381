@@ -59,15 +59,20 @@ nix = Define "nix"
 
 ---------- Task 4 -----------
 -- |
+--   >>> steps 0
+--   []
 --   >>> steps 1
---   [Pen Up,Move (Num 0) (Num 0),Pen Down,Move (Num 0) (Num 1),Move (Num 1) (Num 1),Pen Up]
+--   [Pen Up,Move (Num 0) (Num 0),Pen Down,Move (Num 0) (Num 1),Move (Num 1) (Num 1)]
+--   >>> steps 2
+--   [Pen Up,Move (Num 0) (Num 0),Pen Down,Move (Num 0) (Num 1),Move (Num 1) (Num 1),Move (Num 1) (Num 2),Move (Num 2) (Num 2)]
 steps :: Int -> Prog
-steps n = Pen Up : stepsAcc 0 0 n
+steps 0 = []
+steps n = Pen Up : Move (Num 0) (Num 0) : Pen Down : stepsAcc 0 0 n
 
 -- | Takes a starting X,Y coordinate and a number of steps to draw.
 stepsAcc :: Int -> Int -> Int -> Prog
-stepsAcc _ _ 0 = [Pen Up]
-stepsAcc x y n = [Move (Num x) (Num y), Pen Down, Move (Num x) (Num (y+1)), Move (Num (x+1)) (Num (y+1))]
+stepsAcc _ _ 0 = []
+stepsAcc x y n = [Move (Num x) (Num (y+1)), Move (Num (x+1)) (Num (y+1))]
                   ++ stepsAcc (x+1) (y+1) (n-1)
 
 ---------- Task 5 -----------
