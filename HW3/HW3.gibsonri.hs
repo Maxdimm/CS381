@@ -36,7 +36,7 @@ draw p = let (_,ls) = prog p start in toHTML ls
 
 
 -- | Semantic function for Cmd.
---   
+--
 --   >>> cmd (Pen Down) (Up,(2,3))
 --   ((Down,(2,3)),Nothing)
 --
@@ -50,8 +50,13 @@ draw p = let (_,ls) = prog p start in toHTML ls
 --   ((Down,(4,5)),Just ((2,3),(4,5)))
 --
 cmd :: Cmd -> State -> (State, Maybe Line)
-cmd = undefined
-
+cmd (Pen newMode) (_, point) = ((newMode, point), Nothing)
+cmd (Move newX newY) (Down, (x,y)) =
+  let
+    newState = (Down, (newX, newY))
+    line = ((x,y), (newX, newY))
+  in (newState, Just line)
+cmd (Move newX newY) (Up, _) = ((Up, (newX, newY)), Nothing)
 
 -- | Semantic function for Prog.
 --
@@ -61,7 +66,14 @@ cmd = undefined
 --   >>> prog (steps 2 0 0) start
 --   ((Down,(2,2)),[((0,0),(0,1)),((0,1),(1,1)),((1,1),(1,2)),((1,2),(2,2))])
 prog :: Prog -> State -> (State, [Line])
-prog = undefined
+prog = progAcc []
+
+progAcc :: [Line] -> Prog -> State -> (State, [Line])
+progAcc lineList [] state = (state, lineList)
+progAcc lineList (c:cs) curState =
+  case cmd c curState of
+    (newState, Just line) -> progAcc (lineList ++ [line]) cs newState
+    (newState, Nothing) -> progAcc lineList cs newState
 
 
 --
