@@ -1,8 +1,10 @@
+-- Names:
+--  Rikki Gibson -- ONID: gibsonri
+--  Benjamin Narin -- ONID: narinb
 module HW3 where
 
 import MiniMiniLogo
 import Render
-
 
 --
 -- * Semantics of MiniMiniLogo
@@ -66,21 +68,28 @@ cmd (Move newX newY) (Up, _) = ((Up, (newX, newY)), Nothing)
 --   >>> prog (steps 2 0 0) start
 --   ((Down,(2,2)),[((0,0),(0,1)),((0,1),(1,1)),((1,1),(1,2)),((1,2),(2,2))])
 prog :: Prog -> State -> (State, [Line])
-prog = progAcc []
+-- prog = progAcc []
+prog [] state = (state, [])
+prog (command:commands) state =
+  let (newState, maybeLine) = cmd command state
+      (finalState, restOfLines) = prog commands newState
+  in (finalState, maybe restOfLines (: restOfLines) maybeLine)
 
-progAcc :: [Line] -> Prog -> State -> (State, [Line])
-progAcc lineList [] state = (state, lineList)
-progAcc lineList (c:cs) curState =
-  case cmd c curState of
-    (newState, Just line) -> progAcc (lineList ++ [line]) cs newState
-    (newState, Nothing) -> progAcc lineList cs newState
-
-
+sizableBox :: Int -> Int -> Int -> Int -> Prog
+sizableBox x y w h = [Pen Up, Move x y, Pen Down,
+           Move (x+w) y, Move (x+w) (y+h), Move x (y+h), Move x y]
 --
 -- * Extra credit
 --
 
 -- | This should be a MiniMiniLogo program that draws an amazing picture.
 --   Add as many helper functions as you want.
+facegen :: Int -> Int -> Prog
+facegen x y = sizableBox x y 5 5 ++ sizableBox (x+1) (y+1) 3 1 ++ sizableBox (x+1) (y+3) 1 1 ++ sizableBox (x+3) (y+3) 1 1
+
+-- randface :: Int -> Prog
+-- randface 0 = []
+-- randface n = facegen (randomRIO (1, 10)) (randomRIO (1, 10)) ++ randface (n-1)
+
 amazing :: Prog
-amazing = undefined
+amazing = sizableBox 8 0 16 12 ++ sizableBox 12 12 10 10 ++ facegen 14 22
