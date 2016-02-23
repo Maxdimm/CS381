@@ -92,6 +92,12 @@ stmt (While cond body) defs world robot =
       result -> result
     else OK world robot
 
+stmt (Block []) _ world robot = OK world robot
+stmt (Block (statement:statements)) defs world robot =
+  case stmt statement defs world robot of
+    OK newWorld newRobot -> stmt (Block statements) defs newWorld newRobot
+    result -> result
+
 -- | Run a Karel program.
 prog :: Prog -> World -> Robot -> Result
 prog (m,s) w r = stmt s m w r
