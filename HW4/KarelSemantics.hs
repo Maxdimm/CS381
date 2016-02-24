@@ -1,7 +1,7 @@
 -- Name: Rikki Gibson
 -- ONID: gibsonri
--- I recognize that I'm defying Haskell conventions by giving
--- function parameters descriptive names instead of a few letters.
+-- Name: Benjamin Narin
+-- ONID: narinb
 
 module KarelSemantics where
 
