@@ -73,17 +73,19 @@ siblingInLaw(X,Y) :- sibling(X,Z), married(Y,Z).
 
 % 7. Define two predicates `aunt/2` and `uncle/2`. Your definitions of these
 %    predicates should include aunts and uncles by marriage.
-% An aunt is a sibling-in-law of a parent.
-aunt(X,Y) :- parent(Z,Y), siblingInLaw(X,Z), female(X).
+% An aunt is a sibling or sibling-in-law of a parent.
+aunt(X,Y) :- parent(Z,Y), (siblingInLaw(X,Z) ; sibling(X,Z)), female(X).
+uncle(X,Y) :- parent(Z,Y), (siblingInLaw(X,Z) ; sibling(X,Z)), male(X).
 
 % 8. Define the predicate `cousin/2`.
-
+% A cousin is a child of an aunt or uncle.
+cousin(X,Y) :- parent(T,X), parent(U,Y), sibling(T,U).
 
 % 9. Define the predicate `ancestor/2`.
-
+ancestor(X,Y) :- parent(X,Y).
+ancestor(X,Y) :- parent(Z,Y), ancestor(X,Z).
 
 % Extra credit: Define the predicate `related/2`.
-
 
 
 %%
