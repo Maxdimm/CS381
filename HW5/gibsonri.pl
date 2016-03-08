@@ -91,3 +91,7 @@ ancestor(X,Y) :- parent(Z,Y), ancestor(X,Z).
 %%
 % Part 2. Language implementation (see course web page)
 %%
+% `cmd/3`: the predicate cmd(C,S1,S2) means that executing command C with stack S1 produces stack S2.
+cmd(add,[E1,E2|S1],S2) :- Res is E1 + E2, S2 = [Res|S1].
+cmd(lte,[E1,E2|S1],S2) :- Res = (E1 =< E2), S2 = [Res|S1].
+cmd(E,S1,S2) :- S2 = [E|S1].
