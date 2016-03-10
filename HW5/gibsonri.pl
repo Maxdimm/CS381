@@ -1,3 +1,8 @@
+% Name: Rikki Gibson
+% ONID: gibsonri
+% Name: Benjamin Narin
+% ONID: narinb
+
 % Here are a bunch of facts describing the Simpson's family tree.
 % Don't change them!
 
@@ -91,7 +96,24 @@ ancestor(X,Y) :- parent(Z,Y), ancestor(X,Z).
 %%
 % Part 2. Language implementation (see course web page)
 %%
+
+bool(t).
+bool(f).
+
+literal(X) :- number(X).
+literal(X) :- string(X).
+literal(X) :- bool(X).
+
 % `cmd/3`: the predicate cmd(C,S1,S2) means that executing command C with stack S1 produces stack S2.
+cmd(E,S1,S2) :- literal(E), S2 = [E|S1].
 cmd(add,[E1,E2|S1],S2) :- Res is E1 + E2, S2 = [Res|S1].
-cmd(lte,[E1,E2|S1],S2) :- Res = (E1 =< E2), S2 = [Res|S1].
-cmd(E,S1,S2) :- S2 = [E|S1].
+cmd(lte,[E1,E2|S1],S2) :- is_lte(E1,E2,B), S2 = [B|S1].
+cmd(if(Then,_), [t|S1], S2) :- prog(Then, S1, S2).
+cmd(if(_,Else), [f|S1], S2) :- prog(Else, S1, S2).
+
+is_lte(X, Y, t) :- X =< Y.
+is_lte(X, Y, f) :- X > Y.
+
+% `prog/3`: prog(P,S1,S2) means that executing program P with stack S1 produces stack S2.
+prog([], S, S).
+prog([C|CS], S1, S2) :- cmd(C, S1, S_), prog(CS, S_, S2).
